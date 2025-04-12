@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}DID Verification Platform - Home{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Take Control of Your Digital Identity</h1>
+                <p class="lead mb-4">A secure, decentralized identity verification platform using DIDs, blockchain, and biometric authentication.</p>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                    {% if not user.is_authenticated %}
+                    <a href="/register/" class="btn btn-primary btn-lg px-4 me-md-2">Get Started</a>
+                    <a href="/login/" class="btn btn-outline-light btn-lg px-4">Login</a>
+                    {% else %}
+                    <a href="/dashboard/" class="btn btn-primary btn-lg px-4 me-md-2">Dashboard</a>
+                    <a href="/credentials/" class="btn btn-outline-light btn-lg px-4">My Credentials</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-5 text-center">
+                    <i class="bi bi-shield-lock feature-icon" style="font-size: 8rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row mb-5">
+        <div class="col-md-12 text-center">
+            <h2 class="mb-4">What is a Decentralized Identifier (DID)?</h2>
+            <p class="lead">
+                A DID is a new type of identifier that enables verifiable, decentralized digital identity. 
+                Unlike traditional federated identifiers, DIDs are designed to operate independently of centralized 
+                registries, identity providers, or certificate authorities.
+            </p>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-4 mb-4">
+            <div class="d-flex flex-column h-100 p-4 bg-dark rounded shadow">
+                <div class="text-center mb-3">
+                    <i class="bi bi-person-badge feature-icon"></i>
+                </div>
+                <h3 class="h4 text-center">Self-Sovereign Identity</h3>
+                <p class="text-muted flex-grow-1">You control your own identity. No reliance on third-party identity providers or central authorities.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="d-flex flex-column h-100 p-4 bg-dark rounded shadow">
+                <div class="text-center mb-3">
+                    <i class="bi bi-shield-lock feature-icon"></i>
+                </div>
+                <h3 class="h4 text-center">Enhanced Security</h3>
+                <p class="text-muted flex-grow-1">Cryptographic security ensures that your identity cannot be tampered with or stolen.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="d-flex flex-column h-100 p-4 bg-dark rounded shadow">
+                <div class="text-center mb-3">
+                    <i class="bi bi-check-circle feature-icon"></i>
+                </div>
+                <h3 class="h4 text-center">Verifiable Credentials</h3>
+                <p class="text-muted flex-grow-1">Issue and verify claims about your identity that can be cryptographically verified by anyone.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6 mb-4">
+            <h2 class="mb-4">How It Works</h2>
+            <div class="accordion" id="howItWorksAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            1. Create Your DID
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#howItWorksAccordion">
+                        <div class="accordion-body">
+                            Register on our platform to create your unique Decentralized Identifier (DID). 
+                            This generates cryptographic keys that you control, establishing your self-sovereign digital identity.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            2. Set Up Biometric Authentication
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#howItWorksAccordion">
+                        <div class="accordion-body">
+                            Enhance your security by adding biometric authentication. 
+                            Our platform supports face recognition for quick and secure access to your digital identity.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            3. Issue & Receive Credentials
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#howItWorksAccordion">
+                        <div class="accordion-body">
+                            Issue verifiable credentials to others or receive them from trusted entities. 
+                            Each credential is cryptographically signed and can be verified by anyone without contacting the issuer.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                            4. Verify & Share
+                        </button>
+                    </h2>
+                    <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#howItWorksAccordion">
+                        <div class="accordion-body">
+                            Share your credentials with others via QR codes. 
+                            Anyone can verify the authenticity of your credentials through our platform 
+                            without compromising your privacy.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <h2 class="mb-4">Platform Benefits</h2>
+            <ul class="list-group mb-4">
+                <li class="list-group-item bg-dark">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">Privacy-Preserving</h5>
+                        <i class="bi bi-eye-slash text-primary"></i>
+                    </div>
+                    <p class="mb-1">Share only the information you want to share. No more oversharing personal data.</p>
+                </li>
+                <li class="list-group-item bg-dark">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">Blockchain-Backed</h5>
+                        <i class="bi bi-link text-primary"></i>
+                    </div>
+                    <p class="mb-1">Credentials are anchored to a blockchain, ensuring they cannot be tampered with.</p>
+                </li>
+                <li class="list-group-item bg-dark">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">Revocation Support</h5>
+                        <i class="bi bi-x-circle text-primary"></i>
+                    </div>
+                    <p class="mb-1">Issued credentials can be revoked if necessary, providing complete lifecycle management.</p>
+                </li>
+                <li class="list-group-item bg-dark">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">Portable Identity</h5>
+                        <i class="bi bi-box-arrow-right text-primary"></i>
+                    </div>
+                    <p class="mb-1">Your DID is portable and can be used across different systems and platforms.</p>
+                </li>
+            </ul>
+            <a href="/register/" class="btn btn-primary">Start Building Your Digital Identity</a>
+        </div>
+    </div>
+
+    <div class="row mt-5 pt-5 border-top">
+        <div class="col-md-12 text-center">
+            <h2 class="mb-4">Ready to Take Control of Your Digital Identity?</h2>
+            <p class="lead mb-4">Join thousands of users who have already discovered the benefits of decentralized identity verification.</p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                {% if not user.is_authenticated %}
+                <a href="/register/" class="btn btn-primary btn-lg px-4 me-md-2">Get Started Now</a>
+                <a href="/verify_credential/" class="btn btn-outline-secondary btn-lg px-4">Verify a Credential</a>
+                {% else %}
+                <a href="/dashboard/" class="btn btn-primary btn-lg px-4 me-md-2">Go to Dashboard</a>
+                <a href="/issue_credential/" class="btn btn-outline-secondary btn-lg px-4">Issue a Credential</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
