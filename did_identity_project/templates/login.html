@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}DID Verification Platform - Login{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Login</h3>
+                </div>
+                <div class="card-body">
+                    <form id="login-form">
+                        <div class="alert alert-danger d-none" id="error-message"></div>
+                        <div class="alert alert-success d-none" id="success-message"></div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="username">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                    </form>
+                    <div class="mt-3 text-center">
+                        <p>Don't have an account? <a href="/register/">Register</a></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h3 class="mb-0">Face Login</h3>
+                </div>
+                <div class="card-body text-center">
+                    <p class="card-text mb-3">Login using facial recognition</p>
+                    <div id="face-login-container">
+                        <form id="face-login-form" class="mb-3">
+                            <div class="mb-3">
+                                <label for="face-image-upload" class="form-label">Select your face image</label>
+                                <input type="file" class="form-control" id="face-image-upload" accept="image/*" required>
+                            </div>
+                            <div id="image-preview-container" class="mb-3 d-none">
+                                <img id="face-image-preview" class="img-fluid border rounded mb-2" style="max-height: 200px;" alt="Face image preview">
+                                <button id="clear-image" class="btn btn-sm btn-secondary d-block mx-auto">Clear Image</button>
+                            </div>
+                            <button type="submit" class="btn btn-info mb-2">Login with Face</button>
+                        </form>
+                        <div class="alert alert-danger d-none mt-3" id="face-error-message"></div>
+                        <div class="alert alert-success d-none mt-3" id="face-success-message"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Regular login form
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value
+        };
+        
+        fetch('/api/login/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message && data.message.includes('success')) {
+                // Show success message
+                document.getElementById('success-message').textContent = data.message;
+                document.getElementById('success-message').classList.remove('d-none');
+                document.getElementById('error-message').classList.add('d-none');
+                
+                // Redirect to dashboard after 1 second
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1000);
+            } else {
+                // Show error message
+                let errorMsg = 'Login failed. Please check your credentials.';
+                if (data.error) {
+                    errorMsg = data.error;
+                }
+                
+                document.getElementById('error-message').textContent = errorMsg;
+                document.getElementById('error-message').classList.remove('d-none');
+                document.getElementById('success-message').classList.add('d-none');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('error-message').textContent = 'An error occurred during login.';
+            document.getElementById('error-message').classList.remove('d-none');
+            document.getElementById('success-message').classList.add('d-none');
+        });
+    });
+    
+    // Face login functionality
+    const faceLoginForm = document.getElementById('face-login-form');
+    const faceImageUpload = document.getElementById('face-image-upload');
+    const imagePreviewContainer = document.getElementById('image-preview-container');
+    const faceImagePreview = document.getElementById('face-image-preview');
+    const clearImageBtn = document.getElementById('clear-image');
+    const faceErrorMsg = document.getElementById('face-error-message');
+    const faceSuccessMsg = document.getElementById('face-success-message');
+    
+    // Preview uploaded image
+    faceImageUpload.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                faceImagePreview.src = e.target.result;
+                imagePreviewContainer.classList.remove('d-none');
+            };
+            
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+    
+    // Clear image button
+    clearImageBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        faceImageUpload.value = '';
+        imagePreviewContainer.classList.add('d-none');
+        faceErrorMsg.classList.add('d-none');
+        faceSuccessMsg.classList.add('d-none');
+    });
+    
+    // Face login form submission
+    faceLoginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!faceImageUpload.files || !faceImageUpload.files[0]) {
+            faceErrorMsg.textContent = 'Please select an image first.';
+            faceErrorMsg.classList.remove('d-none');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('face_image', faceImageUpload.files[0]);
+        
+        // Show loading state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+        submitBtn.disabled = true;
+        
+        // Send image to face recognition endpoint
+        fetch('/api/face_login/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Reset button
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+            
+            if (data.message && data.message.includes('success')) {
+                faceSuccessMsg.textContent = data.message;
+                faceSuccessMsg.classList.remove('d-none');
+                faceErrorMsg.classList.add('d-none');
+                
+                // Redirect to dashboard after 1 second
+                setTimeout(() => {
+                    window.location.href = '/dashboard/';
+                }, 1000);
+            } else {
+                let errorMsg = 'Face login failed.';
+                if (data.error) {
+                    errorMsg = data.error;
+                }
+                
+                faceErrorMsg.textContent = errorMsg;
+                faceErrorMsg.classList.remove('d-none');
+                faceSuccessMsg.classList.add('d-none');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+            faceErrorMsg.textContent = 'An error occurred during face login.';
+            faceErrorMsg.classList.remove('d-none');
+            faceSuccessMsg.classList.add('d-none');
+        });
+    });
+    
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock %}
